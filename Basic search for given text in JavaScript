@@ -1,0 +1,58 @@
+var myName = prompt( "Enter text to search for: " );
+
+var text = "Blah Blah things" + " " + myName + " " + "blue bair butt blah blah zing zong doodles" + " " + myName + " " + "wowza";
+var total = 0;
+var hits = [];
+var result = 0;
+
+// iterates through "Text"
+for (n = 0; n < text.length; n++) {
+
+
+    /* detects first letter of myName
+    updates total returned suspected cases
+    pushes text length of myName into array */
+    
+    if ( text[n] === myName[0] ) {
+        total++;
+        for ( m = n; m < n + myName.length; m++ ) {
+        
+            hits.push(text[m]);
+            
+        }   
+    }
+}
+
+// if no suspected cases, stop
+if ( hits.length === 0 ) {
+
+    console.log( "Try again?" );
+}
+
+// check each suspected case, inform user if match found
+else {
+
+    // increments per word
+    for ( n = 0, found = 0; n < total; n++ ) {
+    
+      // increments per letter
+      for ( m = 0; m < myName.length; m++ ) {
+      
+        // keeps code neater, indexes through each word
+        // n + 1 else first result is checked twice
+        var index = ( (n + 1) * myName.length + m );
+        
+        if ( hits[index] === myName[m] ) {
+          found++;
+        }
+      }
+      
+    // strings match, update result counter
+      if ( found === myName.length ) {
+        result++;
+      }
+    
+    }
+}
+
+console.log( result + " " + "results found!" );
