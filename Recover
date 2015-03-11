@@ -1,0 +1,132 @@
+// Recovers a JPG image in C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+ 
+typedef uint8_t  BYTE;
+typedef int32_t  LONG;
+ 
+typedef struct
+{
+    BYTE   bBegin1;
+    BYTE   bBegin2;
+    BYTE   bBegin3;
+    BYTE   bBegin4;
+    LONG   bRest1;
+    LONG   bRest2;
+    LONG   bRest3;
+    LONG   bRest4;
+    LONG   bRest5;
+    LONG   bRest6;
+    LONG   bRest7;
+    LONG   bRest8;
+    LONG   bRest9;
+    LONG   bRest10;
+    LONG   bRest11;
+    LONG   bRest12;
+    LONG   bRest13;
+    LONG   bRest14;
+    LONG   bRest15;
+} __attribute__((__packed__)) // allocates least amount of mem necessary
+BUFFER;
+ 
+int main(int argc, char* argv[])
+{
+    //       1. Open the memory card file
+    //       2. Find the beginning of each JPEG
+    //              0xff 0xd8 0xff 0xe0 OR 0xff 0xd8 0xff 0xe1
+    //              indicate the START OF A JPEG. - 4 bytes each.
+    //  TODO:3. Open a new JPEG file as ###.jpg, named from 000 - 100 . jpg
+    //              sprintf() prints a file out into the current directory, not the terminal
+    //              (char array to store the resultant string, "filename", ###)
+    //              FILE* img = fopen(title, "a");
+    //       4. Write 512 bytes at a time until a new JPEG is detected
+    //          We can use fread() to read 512 bytes at a time (size) with inptr being the memory card.
+    //       5. Detect the end of the file
+    //              if(fread(&data, x bytes, y times, inptr) !== y) , we have reached the end.
+    
+    // ensures correct usage
+    if (argc != 1)
+    {
+        printf("Error 1: Usage: ./recover filename\n");
+        return 1;
+    }
+    
+    // open the memory card file
+    FILE* card = fopen("card.raw", "r");
+    
+    if (card == NULL)
+    {
+        printf("Error 2: Cannot open file.\n");
+        return 2;
+    }
+    
+    int openfile = 0; //checks if a jpg is currently being written.
+    FILE* output;
+    output = NULL;
+    
+    int count = 0; // keeps track of how many jpegs were found for naming.
+    BYTE temp[sizeof(BUFFER)] = {};
+    
+    while (count == 0) // until we find a jpg
+    {   
+        for (int i = 0; i < sizeof(card); i++) // search the array
+            {
+                if (feof(card)) // if we reach end of file
+                {
+                    fclose(card); // close the file
+                    printf("End of file reached.\n");
+                    
+                    if (temp != NULL)
+                    {
+                        free(temp); // and close the array
+                    } 
+                }
+                
+                fread(&temp[i], sizeof(BYTE), 1, card); // read BYTE at a time into temp until end of buffer.
+            }
+        // if jpg detected
+        if ((temp[0] == 0xff) && (temp[1] == 0xd8) && (temp[2] == 0xff)
+           && (temp[3] == 0xe0 || temp[3] == 0xe1))
+        {
+            
+            
+            if (output != NULL)
+            {
+                fclose(output); // close output if not empty
+            }
+            char filename[8]; // file names are 7 characters plus terminator each
+            sprintf(filename, "%03d.jpg", count); // create the filename for the jpg
+            
+            if (openfile == 0)
+            {
+            output = fopen(filename, "w");
+                if (output == NULL)
+                {
+                    printf("Error 3: Could not create output file.\n");
+                    return 3;
+                }
+            fwrite(&temp, sizeof(BUFFER), 1, output);
+            openfile = 1;
+            count ++;
+            }
+            
+            else if (openfile == 1)
+            {
+                fclose(output);
+                output = fopen(filename, "w");
+                fwrite(&temp, sizeof(BUFFER), 1, output);
+                count++;
+            }
+        }
+        else
+        {
+            if (output != NULL)
+            {
+                fwrite(&temp, sizeof(BUFFER), 1, output);
+            }
+        }
+    }
+}
+ 
