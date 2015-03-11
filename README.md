@@ -1,5 +1,5 @@
 Small-Practice-Programs
 =======================
 
-Contains programs not associated with school assignments.
-These will be updated/rotated over time to progressively more involved/difficult code.
+Small games/programs not used for school assignments.
+These are solutions to questions from EdX courses, coding questions/challenges online, and small personal projects.
