@@ -109,43 +109,7 @@ void greet(void)
     usleep(2000000);
 }
  
-/**
- * Initializes the game's board with tiles numbered 1 through d*d - 1,
- * (i.e., fills board with values but does not actually print them),
- * whereby board[i][j] represents row i and column j.
- */
-void init(void)
-{
-    // TODO
-}
- 
-/**
- * Prints the board in its current state.
- */
-void draw(void)
-{
-    // TODO
-}
- 
-/**
- * If tile borders empty space, moves tile and returns true, else
- * returns false. 
- */
-bool move(int tile)
-{
-    // TODO
-    return false;
-}
- 
-/**
- * Returns true if game is won (i.e., board is in winning configuration), 
- * else false.
- */
-bool won(void)
-{
-    // TODO
-    return false;
-}
+
  
 /**
  * Saves the current state of the board to disk (for testing).
